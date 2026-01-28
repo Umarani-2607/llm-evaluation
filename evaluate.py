@@ -1,17 +1,47 @@
+import os
+import requests
+
+
 def generate_response(prompt):
     """
-    Mock LLM response function.
-    Replace this later with a real LLM if needed.
+    Generates a response using either:
+    - Mock LLM (default)
+    - Real LLM (if API key is provided)
     """
-    responses = {
-        "hello": "Hello! How can I help you today?",
-        "what is cloud computing": "Cloud computing is the delivery of computing services over the internet.",
-        "explain ci cd": "CI/CD automates building, testing, and deploying applications.",
-        "bye": "Goodbye! Have a great day."
+
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    # -------- MOCK MODE (default & safe) --------
+    if not api_key:
+        responses = {
+            "hello": "Hello! How can I help you today?",
+            "what is cloud computing": "Cloud computing is the delivery of computing services over the internet.",
+            "explain ci cd": "CI/CD automates building, testing, and deploying applications.",
+            "bye": "Goodbye! Have a great day."
+        }
+        return responses.get(prompt.lower(), "I'm not sure about that.")
+
+    # -------- REAL LLM MODE --------
+    url = "https://api.openai.com/v1/chat/completions"
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
     }
 
-    return responses.get(prompt.lower(), "I'm not sure about that.")
+    payload = {
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.2
+    }
 
+    response = requests.post(url, headers=headers, json=payload, timeout=30)
+    response.raise_for_status()
+
+    return response.json()["choices"][0]["message"]["content"]
 
 test_cases = [
     {
