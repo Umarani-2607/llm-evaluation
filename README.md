@@ -52,3 +52,12 @@ This project focuses on **AI quality, testing, and evaluation**, rather than mod
 
 ```bash
 python evaluate.py
+
+## Repository Structure
+```
+llm-evaluation/
+├── evaluate.py # Evaluation engine
+├── docs/ # Evaluation methodology
+├── results/ # Sample evaluation outputs
+├── README.md
+```
